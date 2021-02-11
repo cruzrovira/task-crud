@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import TaskList from "./component/taskList";
+import TaskForm from "./component/taskForm";
+
 function App() {
   const [task, setTask] = useState({ name: "", id: "" });
   const [taskList, setTaskList] = useState(null);
@@ -62,7 +64,7 @@ function App() {
     <div className="container mt-5">
       <h1 className="text-center text-white">Task Crud</h1>
       <hr />
-      <div className="row">
+      <div className="row align-items-start">
         <div className="col col-md-8 col-12">
           <h3 className="text-center text-white">List Tasks</h3>
           {taskList === null ? (
@@ -79,21 +81,13 @@ function App() {
           <h3 className="text-center">
             {edit === false ? "Add Task" : "Edit Task"}
           </h3>
-
-          <form className="d-grid gap-2" onSubmit={handleAddSubmit}>
-            <input
-              type="text"
-              className="form-control"
-              value={task.name}
-              onChange={handleChangeTask}
-            />
-            {error && <p className="text-danger">Task name is required </p>}
-            <input
-              type="submit"
-              value={edit === false ? "Add" : "Edit"}
-              className={edit === false ? "btn btn-primary" : "btn btn-warning"}
-            />
-          </form>
+          <TaskForm
+            handleAddSubmit={handleAddSubmit}
+            handleChangeTask={handleChangeTask}
+            task={task}
+            edit={edit}
+            error={error}
+          />
         </div>
       </div>
     </div>
