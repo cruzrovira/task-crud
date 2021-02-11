@@ -4,9 +4,9 @@ is a project created with react, in order to learn and share knowledge
 
 ## application design
 
-![task add desing ](./design/img1.png)
+![task add desing ](./desing/img1.png)
 
-![task edit desing ](./design/img2.png)
+![task edit desing ](./desing/img2.png)
 
 ## Available Scripts
 
