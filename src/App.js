@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 import TaskList from "./component/taskList";
 import TaskForm from "./component/taskForm";
+import {
+  getCollection,
+  addDocument,
+  updateDocument,
+  deleteCollection,
+} from "./service/cloudFirestore";
 
 function App() {
   const [task, setTask] = useState({ name: "", id: "" });
@@ -10,15 +15,17 @@ function App() {
   const [error, setEror] = useState(false);
 
   useEffect(() => {
-    const taskListStorage = localStorage.getItem("tasklist");
-    taskListStorage !== null && setTaskList(JSON.parse(taskListStorage));
+    (async () => {
+      const result = await getCollection("tasks");
+      result.statusResponse && setTaskList(result.data);
+    })();
   }, []);
 
   const handleChangeTask = (e) => {
     setTask({ ...task, name: e.target.value });
   };
 
-  const handleAddSubmit = (e) => {
+  const handleAddSubmit = async (e) => {
     e.preventDefault();
     // validate
     if (task.name.trim() === "") {
@@ -29,10 +36,14 @@ function App() {
     let newtaskList = "";
     if (edit === false) {
       // save add
-      const newTask = { ...task, id: uuidv4() };
+      const result = await addDocument("tasks", { name: task.name });
+      const newTask = result.data;
       newtaskList = taskList === null ? [newTask] : [...taskList, newTask];
     } else {
       // save edit
+
+      await updateDocument("tasks", task.id, { name: task.name });
+
       newtaskList = taskList.map((taskItem) =>
         taskItem.id === task.id ? task : taskItem
       );
@@ -40,18 +51,17 @@ function App() {
       setEdit(false);
     }
     setTaskList(newtaskList);
-    localStorage.setItem("tasklist", JSON.stringify(newtaskList));
     setTask({ name: "", id: "" });
   };
 
   const handleDelete = (task) => {
+    deleteCollection("tasks", task.id);
     const newtaskList = taskList.filter((taskItem) => taskItem.id !== task.id);
     if (newtaskList.length === 0) {
       setTaskList(null);
       localStorage.removeItem("tasklist");
     } else {
       setTaskList(newtaskList);
-      localStorage.setItem("tasklist", JSON.stringify(newtaskList));
     }
   };
 
